@@ -132,6 +132,9 @@
       "path": "../../packages/metrics"
     },
     {
+      "path": "../../packages/mini-atoms"
+    },
+    {
       "path": "../../packages/mini-browser"
     },
     {

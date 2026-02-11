@@ -256,7 +256,7 @@ export class MiniBrowserOpenHandler extends NavigatableWidgetOpenHandler<MiniBro
         }
         await this.open(uri, {
             mode: 'reveal',
-            widgetOptions: { ref, mode: 'open-to-right' },
+            widgetOptions: ref ? { area: 'main', mode: 'tab-after', ref } : { area: 'main' },
             openFor: 'preview'
         });
     }
@@ -301,7 +301,7 @@ export class MiniBrowserOpenHandler extends NavigatableWidgetOpenHandler<MiniBro
             startPage,
             toolbar: 'read-only',
             widgetOptions: {
-                area: 'right'
+                area: 'main'
             },
             resetBackground,
             iconClass: codicon('preview'),

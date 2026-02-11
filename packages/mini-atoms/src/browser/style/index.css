@@ -1,0 +1,147 @@
+/* Mini Atoms widget styles */
+.mini-atoms-widget {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.mini-atoms-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    padding: 12px;
+    gap: 12px;
+}
+
+/* Atoms-like layout: compact input at top, preview dominant in left panel */
+.mini-atoms-input-section {
+    flex-shrink: 0;
+}
+
+.mini-atoms-input-section .mini-atoms-label {
+    margin-bottom: 4px;
+}
+
+.mini-atoms-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: var(--theia-ui-font-size1);
+    color: var(--theia-foreground);
+}
+
+.mini-atoms-textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 48px;
+}
+
+.mini-atoms-validation-error {
+    color: var(--theia-errorForeground);
+    font-size: var(--theia-ui-font-size0);
+    margin-top: 4px;
+}
+
+.mini-atoms-actions {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mini-atoms-preview-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.mini-atoms-preview-container {
+    flex: 1;
+    min-height: 200px;
+    border: 1px solid var(--theia-panelBorder);
+    border-radius: 8px;
+    background: var(--theia-editorBackground);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mini-atoms-preview-iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+
+.mini-atoms-loading,
+.mini-atoms-error,
+.mini-atoms-preview-empty {
+    padding: 16px;
+    color: var(--theia-descriptionForeground);
+    font-size: var(--theia-ui-font-size2);
+}
+
+.mini-atoms-preview-empty p {
+    margin: 0 0 8px 0;
+}
+
+.mini-atoms-hint {
+    font-size: var(--theia-ui-font-size0);
+    opacity: 0.85;
+}
+
+.mini-atoms-error {
+    color: var(--theia-errorForeground);
+}
+
+.mini-atoms-history-section {
+    flex-shrink: 0;
+    max-height: 140px;
+    display: flex;
+    flex-direction: column;
+}
+
+.mini-atoms-history-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+}
+
+.mini-atoms-history-item {
+    margin: 4px 0;
+}
+
+.mini-atoms-history-btn {
+    width: 100%;
+    text-align: left;
+    padding: 6px 10px;
+    border: 1px solid var(--theia-panelBorder);
+    border-radius: 4px;
+    background: var(--theia-button-secondaryBackground);
+    color: var(--theia-button-secondaryForeground);
+    cursor: pointer;
+    font-size: var(--theia-ui-font-size0);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.mini-atoms-history-btn:hover {
+    background: var(--theia-button-secondaryHoverBackground);
+}
+
+.mini-atoms-history-desc {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mini-atoms-history-date {
+    color: var(--theia-descriptionForeground);
+    font-size: 0.9em;
+}

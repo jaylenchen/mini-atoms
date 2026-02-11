@@ -64,6 +64,7 @@
     "@theia/memory-inspector": "1.68.2",
     "@theia/messages": "1.68.2",
     "@theia/metrics": "1.68.2",
+    "@theia/mini-atoms": "1.68.2",
     "@theia/mini-browser": "1.68.2",
     "@theia/monaco": "1.68.2",
     "@theia/navigator": "1.68.2",

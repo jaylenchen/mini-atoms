@@ -10,7 +10,8 @@
 
 import { injectable } from '@theia/core/shared/inversify';
 import { CommandRegistry, MenuModelRegistry } from '@theia/core/lib/common';
-import { AbstractViewContribution, codicon } from '@theia/core/lib/browser';
+import { AbstractViewContribution, codicon, FrontendApplicationContribution } from '@theia/core/lib/browser';
+import { FrontendApplication } from '@theia/core/lib/browser/frontend-application';
 import { CommonMenus } from '@theia/core/lib/browser/common-menus';
 import { MiniAtomsWidget } from './mini-atoms-widget';
 
@@ -21,16 +22,21 @@ export const MiniAtomsCommand = {
 };
 
 @injectable()
-export class MiniAtomsContribution extends AbstractViewContribution<MiniAtomsWidget> {
+export class MiniAtomsContribution extends AbstractViewContribution<MiniAtomsWidget> implements FrontendApplicationContribution {
 
     constructor() {
         super({
             widgetId: MiniAtomsWidget.ID,
             widgetName: MiniAtomsWidget.LABEL,
             defaultWidgetOptions: {
-                area: 'left'
+                area: 'left',
+                rank: 0
             }
         });
+    }
+
+    async initializeLayout(_app: FrontendApplication): Promise<void> {
+        await this.openView({ activate: true });
     }
 
     override registerCommands(registry: CommandRegistry): void {

@@ -27,6 +27,8 @@ import { ChatAgent, ChatAgentLocation, ChatService, isActiveSessionChangedEvent 
 import { ChatAgentService } from '@theia/ai-chat/lib/common/chat-agent-service';
 import { EditorManager } from '@theia/editor/lib/browser/editor-manager';
 import { AbstractViewContribution } from '@theia/core/lib/browser/shell/view-contribution';
+import { FrontendApplicationContribution } from '@theia/core/lib/browser/frontend-application-contribution';
+import { FrontendApplication } from '@theia/core/lib/browser/frontend-application';
 import { TabBarToolbarContribution, TabBarToolbarRegistry } from '@theia/core/lib/browser/shell/tab-bar-toolbar';
 import { ChatViewWidget } from './chat-view-widget';
 import { Deferred } from '@theia/core/lib/common/promise-util';
@@ -43,7 +45,7 @@ import { SESSION_STORAGE_PREF } from '@theia/ai-chat/lib/common/ai-chat-preferen
 export const AI_CHAT_TOGGLE_COMMAND_ID = 'aiChat:toggle';
 
 @injectable()
-export class AIChatContribution extends AbstractViewContribution<ChatViewWidget> implements TabBarToolbarContribution {
+export class AIChatContribution extends AbstractViewContribution<ChatViewWidget> implements FrontendApplicationContribution, TabBarToolbarContribution {
 
     @inject(ChatService)
     protected readonly chatService: ChatService;
@@ -114,6 +116,10 @@ export class AIChatContribution extends AbstractViewContribution<ChatViewWidget>
         });
 
         this.checkPersistedSessions();
+    }
+
+    async initializeLayout(_app: FrontendApplication): Promise<void> {
+        await this.openView({ activate: true });
     }
 
     protected async checkPersistedSessions(): Promise<void> {

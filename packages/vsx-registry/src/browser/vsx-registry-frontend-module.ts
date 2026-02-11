@@ -20,10 +20,12 @@ import { ContainerModule } from '@theia/core/shared/inversify';
 import {
     WidgetFactory, bindViewContribution, FrontendApplicationContribution, ViewContainerIdentifier, OpenHandler, WidgetManager, WebSocketConnectionProvider,
     WidgetStatusBarContribution,
-    noopWidgetStatusBarContribution
+    noopWidgetStatusBarContribution,
+    ShellLayoutTransformer
 } from '@theia/core/lib/browser';
 import { VSXExtensionsViewContainer } from './vsx-extensions-view-container';
 import { VSXExtensionsContribution } from './vsx-extensions-contribution';
+import { VsxLayoutTransformer } from './vsx-layout-transformer';
 import { VSXExtensionsSearchBar } from './vsx-extensions-search-bar';
 import { VSXExtensionsModel } from './vsx-extensions-model';
 import { ColorContribution } from '@theia/core/lib/browser/color-application-contribution';
@@ -102,6 +104,8 @@ export default new ContainerModule((bind, unbind, isBound, rebind) => {
     })).inSingletonScope();
 
     bind(VSXExtensionsSearchModel).toSelf().inSingletonScope();
+
+    bind(ShellLayoutTransformer).to(VsxLayoutTransformer).inSingletonScope();
 
     rebind(LanguageQuickPickService).to(VSXLanguageQuickPickService).inSingletonScope();
 

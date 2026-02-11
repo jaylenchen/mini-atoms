@@ -129,7 +129,7 @@ export class DebugFrontendApplicationContribution extends AbstractViewContributi
     }
 
     async initializeLayout(): Promise<void> {
-        await this.openView();
+        // Debug view is not opened by default; hide from left sidebar entry. User can open via View menu or command.
     }
 
     protected firstSessionStart = true;

@@ -156,7 +156,7 @@ export class TestViewContribution extends AbstractViewContribution<TestTreeWidge
     }
 
     async initializeLayout(): Promise<void> {
-        await this.openView({ activate: false });
+        // Test view is not opened by default; hide from left sidebar entry. User can open via View menu or command.
     }
 
     override registerCommands(commands: CommandRegistry): void {

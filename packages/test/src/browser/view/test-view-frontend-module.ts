@@ -20,7 +20,8 @@ import { interfaces, ContainerModule, Container } from '@theia/core/shared/inver
 import {
     bindViewContribution, FrontendApplicationContribution,
     WidgetFactory, ViewContainer,
-    WidgetManager, createTreeContainer
+    WidgetManager, ShellLayoutTransformer,
+    createTreeContainer
 } from '@theia/core/lib/browser';
 import { TestTree, TestTreeWidget } from './test-tree-widget';
 import { TestViewContribution, TEST_VIEW_CONTAINER_ID, TEST_VIEW_CONTAINER_TITLE_OPTIONS, TEST_VIEW_CONTEXT_MENU } from './test-view-contribution';
@@ -36,6 +37,7 @@ import { TestRunTree, TestRunTreeWidget } from './test-run-widget';
 import { TestResultViewContribution } from './test-result-view-contribution';
 import { TEST_RUNS_CONTEXT_MENU, TestRunViewContribution } from './test-run-view-contribution';
 import { TestContextKeyService } from './test-context-key-service';
+import { TestLayoutTransformer } from './test-layout-transformer';
 import { DefaultTestExecutionProgressService, TestExecutionProgressService } from '../test-execution-progress-service';
 import { bindTestPreferences } from '../../common/test-preferences';
 
@@ -97,6 +99,8 @@ export default new ContainerModule(bind => {
             }); return viewContainer;
         }
     })).inSingletonScope();
+
+    bind(ShellLayoutTransformer).to(TestLayoutTransformer).inSingletonScope();
 
     bindViewContribution(bind, TestViewContribution);
     bindViewContribution(bind, TestRunViewContribution);

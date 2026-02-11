@@ -165,7 +165,7 @@ export class ScmContribution extends AbstractViewContribution<ScmWidget> impleme
     }
 
     async initializeLayout(): Promise<void> {
-        await this.openView();
+        // Git view is not opened by default; hide from left sidebar entry. User can open via View menu or command.
     }
 
     onStart(): void {

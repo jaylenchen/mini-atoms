@@ -21,7 +21,8 @@ import { ContainerModule } from '@theia/core/shared/inversify';
 import {
     bindViewContribution,
     FrontendApplicationContribution,
-    ApplicationShellLayoutMigration
+    ApplicationShellLayoutMigration,
+    ShellLayoutTransformer
 } from '@theia/core/lib/browser';
 import { FileNavigatorWidget, FILE_NAVIGATOR_ID } from './navigator-widget';
 import { FileNavigatorContribution } from './navigator-contribution';
@@ -36,6 +37,7 @@ import { NavigatorLayoutVersion3Migration, NavigatorLayoutVersion5Migration } fr
 import { NavigatorTabBarDecorator } from './navigator-tab-bar-decorator';
 import { TabBarDecorator } from '@theia/core/lib/browser/shell/tab-bar-decorator';
 import { NavigatorWidgetFactory } from './navigator-widget-factory';
+import { NavigatorLayoutTransformer } from './navigator-layout-transformer';
 import { bindContributionProvider } from '@theia/core/lib/common';
 import { OpenEditorsTreeDecorator } from './open-editors-widget/navigator-open-editors-decorator-service';
 import { OpenEditorsWidget } from './open-editors-widget/navigator-open-editors-widget';
@@ -77,6 +79,7 @@ export default new ContainerModule(bind => {
     bind(WidgetFactory).toService(NavigatorWidgetFactory);
     bind(ApplicationShellLayoutMigration).to(NavigatorLayoutVersion3Migration).inSingletonScope();
     bind(ApplicationShellLayoutMigration).to(NavigatorLayoutVersion5Migration).inSingletonScope();
+    bind(ShellLayoutTransformer).to(NavigatorLayoutTransformer).inSingletonScope();
 
     bind(NavigatorDiff).toSelf().inSingletonScope();
     bind(NavigatorTabBarDecorator).toSelf().inSingletonScope();

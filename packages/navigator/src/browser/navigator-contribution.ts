@@ -216,8 +216,8 @@ export class FileNavigatorContribution extends AbstractViewContribution<FileNavi
         }
     }
 
-    async initializeLayout(app: FrontendApplication): Promise<void> {
-        await this.openView();
+    async initializeLayout(_app: FrontendApplication): Promise<void> {
+        // Explorer (file workspace) view is not opened by default; hide from left sidebar entry. User can open via View menu or command.
     }
 
     override registerCommands(registry: CommandRegistry): void {

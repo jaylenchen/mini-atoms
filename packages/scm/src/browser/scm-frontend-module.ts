@@ -21,6 +21,7 @@ import {
     bindViewContribution, FrontendApplicationContribution,
     WidgetFactory, ViewContainer,
     WidgetManager, ApplicationShellLayoutMigration,
+    ShellLayoutTransformer,
     createTreeContainer, TreeModel, TreeModelImpl, StylingParticipant
 } from '@theia/core/lib/browser';
 import { ScmService } from './scm-service';
@@ -39,6 +40,7 @@ import { ScmDecorationsService } from './decorations/scm-decorations-service';
 import { ScmAvatarService } from './scm-avatar-service';
 import { ScmContextKeyService } from './scm-context-key-service';
 import { ScmLayoutVersion3Migration, ScmLayoutVersion5Migration } from './scm-layout-migrations';
+import { ScmLayoutTransformer } from './scm-layout-transformer';
 import { ScmTreeLabelProvider } from './scm-tree-label-provider';
 import { TabBarToolbarContribution } from '@theia/core/lib/browser/shell/tab-bar-toolbar';
 import { ColorContribution } from '@theia/core/lib/browser/color-application-contribution';
@@ -106,6 +108,7 @@ export default new ContainerModule(bind => {
     })).inSingletonScope();
     bind(ApplicationShellLayoutMigration).to(ScmLayoutVersion3Migration).inSingletonScope();
     bind(ApplicationShellLayoutMigration).to(ScmLayoutVersion5Migration).inSingletonScope();
+    bind(ShellLayoutTransformer).to(ScmLayoutTransformer).inSingletonScope();
 
     bind(ScmQuickOpenService).toSelf().inSingletonScope();
     bindViewContribution(bind, ScmContribution);

@@ -67,8 +67,8 @@ export class OutlineViewContribution extends AbstractViewContribution<OutlineVie
         });
     }
 
-    async initializeLayout(app: FrontendApplication): Promise<void> {
-        await this.openView();
+    async initializeLayout(_app: FrontendApplication): Promise<void> {
+        // Outline view is not opened by default; hide from right sidebar entry. User can open via View menu or command.
     }
 
     override registerCommands(commands: CommandRegistry): void {

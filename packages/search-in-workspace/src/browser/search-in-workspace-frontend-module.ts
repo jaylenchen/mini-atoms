@@ -22,6 +22,7 @@ import { SearchInWorkspaceServer, SIW_WS_PATH } from '../common/search-in-worksp
 import {
     WidgetFactory, createTreeContainer, bindViewContribution, FrontendApplicationContribution, LabelProviderContribution,
     ApplicationShellLayoutMigration,
+    ShellLayoutTransformer,
     StylingParticipant, RemoteConnectionProvider, ServiceConnectionProvider
 } from '@theia/core/lib/browser';
 import { SearchInWorkspaceWidget } from './search-in-workspace-widget';
@@ -33,6 +34,7 @@ import { bindSearchInWorkspacePreferences } from '../common/search-in-workspace-
 import { SearchInWorkspaceLabelProvider } from './search-in-workspace-label-provider';
 import { SearchInWorkspaceFactory } from './search-in-workspace-factory';
 import { SearchLayoutVersion3Migration } from './search-layout-migrations';
+import { SearchLayoutTransformer } from './search-layout-transformer';
 
 export default new ContainerModule(bind => {
     bind(SearchInWorkspaceContextKeyService).toSelf().inSingletonScope();
@@ -46,6 +48,7 @@ export default new ContainerModule(bind => {
     bind(SearchInWorkspaceFactory).toSelf().inSingletonScope();
     bind(WidgetFactory).toService(SearchInWorkspaceFactory);
     bind(ApplicationShellLayoutMigration).to(SearchLayoutVersion3Migration).inSingletonScope();
+    bind(ShellLayoutTransformer).to(SearchLayoutTransformer).inSingletonScope();
 
     bindViewContribution(bind, SearchInWorkspaceFrontendContribution);
     bind(FrontendApplicationContribution).toService(SearchInWorkspaceFrontendContribution);

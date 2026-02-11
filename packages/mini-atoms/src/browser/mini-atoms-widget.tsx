@@ -10,7 +10,7 @@
 
 import { Message } from '@theia/core/shared/@lumino/messaging';
 import { ReactWidget } from '@theia/core/lib/browser/widgets/react-widget';
-import { codicon } from '@theia/core/lib/browser';
+import { codicon, PINNED_CLASS } from '@theia/core/lib/browser';
 import { injectable, inject, postConstruct } from '@theia/core/shared/inversify';
 import * as React from '@theia/core/shared/react';
 import { nls } from '@theia/core/lib/common/nls';
@@ -40,7 +40,10 @@ export class MiniAtomsWidget extends ReactWidget {
         this.title.label = MiniAtomsWidget.LABEL;
         this.title.caption = MiniAtomsWidget.LABEL;
         this.title.iconClass = codicon('browser');
-        this.title.closable = true;
+        this.title.closable = false;
+        if (!this.title.className.includes(PINNED_CLASS)) {
+            this.title.className += ` ${PINNED_CLASS}`;
+        }
         this.addClass('mini-atoms-widget');
         this.loadStored();
     }

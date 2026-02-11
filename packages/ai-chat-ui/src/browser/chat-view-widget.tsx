@@ -15,7 +15,7 @@
 // *****************************************************************************
 import { CommandService, deepClone, Emitter, Event, MessageService, PreferenceService, URI } from '@theia/core';
 import { ChatRequest, ChatRequestModel, ChatService, ChatSession, isActiveSessionChangedEvent, MutableChatModel } from '@theia/ai-chat';
-import { BaseWidget, codicon, ExtractableWidget, Message, PanelLayout, StatefulWidget } from '@theia/core/lib/browser';
+import { BaseWidget, codicon, ExtractableWidget, Message, PanelLayout, PINNED_CLASS, StatefulWidget } from '@theia/core/lib/browser';
 import { nls } from '@theia/core/lib/common/nls';
 import { inject, injectable, optional, postConstruct } from '@theia/core/shared/inversify';
 import { AIChatInputWidget } from './chat-input-widget';
@@ -85,7 +85,10 @@ export class ChatViewWidget extends BaseWidget implements ExtractableWidget, Sta
         this.title.label = ChatViewWidget.LABEL;
         this.title.caption = ChatViewWidget.LABEL;
         this.title.iconClass = codicon('comment-discussion');
-        this.title.closable = true;
+        this.title.closable = false;
+        if (!this.title.className.includes(PINNED_CLASS)) {
+            this.title.className += ` ${PINNED_CLASS}`;
+        }
         this.node.classList.add('chat-view-widget');
         this.update();
     }

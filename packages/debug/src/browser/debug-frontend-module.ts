@@ -22,7 +22,8 @@ import { DebugWidget } from './view/debug-widget';
 import { DebugPath, DebugService } from '../common/debug-service';
 import {
     WidgetFactory, WebSocketConnectionProvider, FrontendApplicationContribution,
-    bindViewContribution
+    bindViewContribution,
+    ShellLayoutTransformer
 } from '@theia/core/lib/browser';
 import { DebugSessionManager } from './debug-session-manager';
 import { DebugResourceResolver } from './debug-resource';
@@ -36,6 +37,7 @@ import {
 import { bindContributionProvider, ResourceResolver } from '@theia/core';
 import { ContextKeyService } from '@theia/core/lib/browser/context-key-service';
 import { DebugFrontendApplicationContribution } from './debug-frontend-application-contribution';
+import { DebugLayoutTransformer } from './debug-layout-transformer';
 import { DebugConsoleContribution } from './console/debug-console-contribution';
 import { BreakpointManager } from './breakpoint/breakpoint-manager';
 import { DebugEditorService } from './editor/debug-editor-service';
@@ -102,6 +104,8 @@ export default new ContainerModule((bind: interfaces.Bind) => {
     bind(DebugService).toDynamicValue(context => WebSocketConnectionProvider.createProxy(context.container, DebugPath)).inSingletonScope();
     bind(DebugResourceResolver).toSelf().inSingletonScope();
     bind(ResourceResolver).toService(DebugResourceResolver);
+
+    bind(ShellLayoutTransformer).to(DebugLayoutTransformer).inSingletonScope();
 
     bindViewContribution(bind, DebugFrontendApplicationContribution);
     bind(FrontendApplicationContribution).toService(DebugFrontendApplicationContribution);

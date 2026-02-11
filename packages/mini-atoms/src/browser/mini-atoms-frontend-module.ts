@@ -28,6 +28,7 @@ export default new ContainerModule((bind: interfaces.Bind, _unbind: interfaces.U
     bind(MiniAtomsApplicationShell).toSelf().inSingletonScope();
     rebind(ApplicationShell).toService(MiniAtomsApplicationShell);
     bindViewContribution(bind, MiniAtomsContribution);
+    bind(FrontendApplicationContribution).toService(MiniAtomsContribution);
     bind(WidgetStatusBarContribution).toConstantValue(noopWidgetStatusBarContribution(MiniAtomsWidget));
     bind(MiniAtomsChatIntegration).toSelf().inSingletonScope();
     bind(FrontendApplicationContribution).toService(MiniAtomsChatIntegration);

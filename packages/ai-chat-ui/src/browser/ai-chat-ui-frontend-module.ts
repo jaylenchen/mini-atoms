@@ -65,6 +65,7 @@ import { ChatFocusContribution } from './chat-focus-contribution';
 
 export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
     bindViewContribution(bind, AIChatContribution);
+    bind(FrontendApplicationContribution).toService(AIChatContribution);
     bind(TabBarToolbarContribution).toService(AIChatContribution);
 
     bind(ChatInputHistoryService).toSelf().inSingletonScope();

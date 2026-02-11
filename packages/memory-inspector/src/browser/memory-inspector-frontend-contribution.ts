@@ -78,7 +78,7 @@ export class DebugFrontendContribution extends AbstractViewContribution<MemoryLa
     }
 
     async initializeLayout(): Promise<void> {
-        await this.openView({ activate: false });
+        // Memory view is not opened by default; hide from right sidebar entry. User can open via View menu or command.
     }
 
     override registerCommands(registry: CommandRegistry): void {

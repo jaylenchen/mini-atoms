@@ -18,11 +18,12 @@ import '../../src/browser/register-widget/register-widget.css';
 import '../../src/browser/style/index.css';
 import '../../src/browser/utils/multi-select-bar.css';
 import { bindContributionProvider } from '@theia/core';
-import { bindViewContribution, FrontendApplicationContribution, WidgetFactory } from '@theia/core/lib/browser';
+import { bindViewContribution, FrontendApplicationContribution, WidgetFactory, ShellLayoutTransformer } from '@theia/core/lib/browser';
 import { ColorContribution } from '@theia/core/lib/browser/color-application-contribution';
 import { TabBarToolbarContribution } from '@theia/core/lib/browser/shell/tab-bar-toolbar';
 import { ContainerModule } from '@theia/core/shared/inversify';
 import { DebugFrontendContribution } from './memory-inspector-frontend-contribution';
+import { MemoryLayoutTransformer } from './memory-layout-transformer';
 import { MemoryDiffOptionsWidget } from './diff-widget/memory-diff-options-widget';
 import { MemoryDiffSelectWidget } from './diff-widget/memory-diff-select-widget';
 import { MemoryDiffTableWidget, MemoryDiffWidget } from './diff-widget/memory-diff-table-widget';
@@ -44,6 +45,8 @@ import { MemoryLayoutWidget } from './wrapper-widgets/memory-layout-widget';
 import { CDTGDBMemoryProvider } from './memory-provider/cdt-gdb-memory-provider';
 
 export default new ContainerModule(bind => {
+    bind(ShellLayoutTransformer).to(MemoryLayoutTransformer).inSingletonScope();
+
     bindViewContribution(bind, DebugFrontendContribution);
     bind(ColorContribution).toService(DebugFrontendContribution);
     bind(TabBarToolbarContribution).toService(DebugFrontendContribution);

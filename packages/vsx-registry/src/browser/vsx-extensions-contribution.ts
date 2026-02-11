@@ -87,8 +87,8 @@ export class VSXExtensionsContribution extends AbstractViewContribution<VSXExten
         }, 5000, { trailing: true }));
     }
 
-    async initializeLayout(app: FrontendApplication): Promise<void> {
-        await this.openView({ activate: false });
+    async initializeLayout(_app: FrontendApplication): Promise<void> {
+        // Extensions view is not opened by default; hide from left sidebar entry. User can open via View menu or command.
     }
 
     override registerCommands(commands: CommandRegistry): void {

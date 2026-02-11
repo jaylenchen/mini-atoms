@@ -17,6 +17,7 @@
 import { ContainerModule, interfaces } from '@theia/core/shared/inversify';
 import { OutlineViewService } from './outline-view-service';
 import { OutlineViewContribution } from './outline-view-contribution';
+import { OutlineLayoutTransformer } from './outline-layout-transformer';
 import { WidgetFactory } from '@theia/core/lib/browser/widget-manager';
 import {
     FrontendApplicationContribution,
@@ -24,7 +25,8 @@ import {
     bindViewContribution,
     TreeProps,
     defaultTreeProps,
-    BreadcrumbsContribution
+    BreadcrumbsContribution,
+    ShellLayoutTransformer
 } from '@theia/core/lib/browser';
 import { TabBarToolbarContribution } from '@theia/core/lib/browser/shell/tab-bar-toolbar';
 import { OutlineViewWidgetFactory, OutlineViewWidget } from './outline-view-widget';
@@ -48,6 +50,8 @@ export default new ContainerModule(bind => {
 
     bind(OutlineViewService).toSelf().inSingletonScope();
     bind(WidgetFactory).toService(OutlineViewService);
+
+    bind(ShellLayoutTransformer).to(OutlineLayoutTransformer).inSingletonScope();
 
     bindViewContribution(bind, OutlineViewContribution);
     bind(FrontendApplicationContribution).toService(OutlineViewContribution);

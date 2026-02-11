@@ -53,7 +53,7 @@ export class PreferencesContribution extends AbstractViewContribution<Preference
             widgetId: PreferencesWidget.ID,
             widgetName: PreferencesWidget.LABEL,
             defaultWidgetOptions: {
-                area: 'main',
+                area: 'right',
             },
         });
     }
@@ -61,7 +61,14 @@ export class PreferencesContribution extends AbstractViewContribution<Preference
     override registerCommands(commands: CommandRegistry): void {
         commands.registerCommand(CommonCommands.OPEN_PREFERENCES, {
             execute: async (query?: string) => {
-                const widget = await this.openView({ activate: true });
+                const widget = await this.widget;
+                const area = this.shell.getAreaFor(widget);
+                if (!widget.isAttached || area !== 'right') {
+                    await this.shell.addWidget(widget, {
+                        area: 'right'
+                    });
+                }
+                await this.shell.activateWidget(widget.id);
                 if (typeof query === 'string') {
                     widget.setSearchTerm(query);
                 }
@@ -191,7 +198,9 @@ export class PreferencesContribution extends AbstractViewContribution<Preference
         let jsonEditorWidget: EditorWidget;
         const jsonUriToOpen = await this.obtainConfigUri(scopeID, activeScopeIsFolder, uri);
         if (jsonUriToOpen) {
-            jsonEditorWidget = await this.editorManager.open(jsonUriToOpen);
+            jsonEditorWidget = await this.editorManager.open(jsonUriToOpen, {
+                widgetOptions: { area: 'right' }
+            });
 
             if (preferenceId) {
                 const text = jsonEditorWidget.editor.document.getText();
@@ -207,7 +216,9 @@ export class PreferencesContribution extends AbstractViewContribution<Preference
     protected async openJson(scope: PreferenceScope, resource?: string): Promise<void> {
         const jsonUriToOpen = await this.obtainConfigUri(scope, false, resource);
         if (jsonUriToOpen) {
-            await this.editorManager.open(jsonUriToOpen);
+            await this.editorManager.open(jsonUriToOpen, {
+                widgetOptions: { area: 'right' }
+            });
         }
     }
 

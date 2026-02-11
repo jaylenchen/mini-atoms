@@ -88,7 +88,7 @@ export class AIHistoryViewContribution extends AIViewContribution<AIHistoryView>
             widgetId: AIHistoryView.ID,
             widgetName: AIHistoryView.LABEL,
             defaultWidgetOptions: {
-                area: 'bottom',
+                area: 'right',
                 rank: 100
             },
             toggleCommandId: AI_HISTORY_TOGGLE_COMMAND_ID,
@@ -102,7 +102,10 @@ export class AIHistoryViewContribution extends AIViewContribution<AIHistoryView>
     override registerCommands(registry: CommandRegistry): void {
         super.registerCommands(registry);
         registry.registerCommand(OPEN_AI_HISTORY_VIEW, {
-            execute: () => this.openView({ activate: true }),
+            execute: () => this.openView({
+                activate: true,
+                area: 'right'
+            }),
         });
         registry.registerCommand(AI_HISTORY_VIEW_SORT_CHRONOLOGICALLY, {
             isEnabled: widget => this.withHistoryWidget(widget, historyView => !historyView.isChronological),

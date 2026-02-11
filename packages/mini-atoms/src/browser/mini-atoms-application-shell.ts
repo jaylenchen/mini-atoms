@@ -48,10 +48,11 @@ export class MiniAtomsApplicationShell extends ApplicationShellWithToolbarOverri
         );
         const panelForSideAreas = new TheiaSplitPanel({ layout: leftRightSplitLayout });
         panelForSideAreas.id = 'theia-left-right-split-panel';
-        // Do not include the status bar in this layout: only top, toolbar, and left/right split.
+        // Do not include the status bar or the top menu bar in this layout:
+        // only toolbar and left/right split.
         return this.createBoxLayout(
-            [this.topPanel, this.toolbar, panelForSideAreas],
-            [0, 0, 1],
+            [this.toolbar, panelForSideAreas],
+            [0, 1],
             { direction: 'top-to-bottom', spacing: 0 },
         );
     }

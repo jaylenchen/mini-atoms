@@ -35,7 +35,7 @@ export class AIAgentConfigurationViewContribution extends AIViewContribution<AIC
             widgetId: AIConfigurationContainerWidget.ID,
             widgetName: AIConfigurationContainerWidget.LABEL,
             defaultWidgetOptions: {
-                area: 'main',
+                area: 'right',
                 rank: 100
             },
             toggleCommandId: AI_CONFIGURATION_TOGGLE_COMMAND_ID
@@ -49,7 +49,10 @@ export class AIAgentConfigurationViewContribution extends AIViewContribution<AIC
     override registerCommands(commands: CommandRegistry): void {
         super.registerCommands(commands);
         commands.registerCommand(OPEN_AI_CONFIG_VIEW, {
-            execute: () => this.openView({ activate: true }),
+            execute: () => this.openView({
+                activate: true,
+                area: 'right'
+            }),
         });
     }
 

@@ -28,6 +28,8 @@ export class StreamingAsyncIterator implements AsyncIterableIterator<LanguageMod
     protected done = false;
     protected terminalError: Error | undefined = undefined;
     protected readonly toDispose = new DisposableCollection();
+    /** Cache tool_call id → { name, arguments } so message (role=tool) events can emit complete function info. */
+    protected readonly toolCallNames = new Map<string, { name: string; arguments: string }>();
 
     constructor(
         protected readonly stream: ChatCompletionStream,
@@ -47,10 +49,12 @@ export class StreamingAsyncIterator implements AsyncIterableIterator<LanguageMod
         }, true);
         this.registerStreamListener('message', message => {
             if (message.role === 'tool') {
+                const cached = this.toolCallNames.get(message.tool_call_id);
                 this.handleIncoming({
                     tool_calls: [{
                         id: message.tool_call_id,
                         finished: true,
+                        function: cached ? { name: cached.name, arguments: cached.arguments } : undefined,
                         result: tryParseToolResult(message.content)
                     }]
                 });
@@ -99,7 +103,38 @@ export class StreamingAsyncIterator implements AsyncIterableIterator<LanguageMod
                 delete (snapshot.choices[0].message as { channel?: string }).channel;
                 return;
             }
-            this.handleIncoming({ ...chunk.choices[0]?.delta as LanguageModelStreamResponsePart });
+            const delta = chunk.choices[0]?.delta as LanguageModelStreamResponsePart & { tool_calls?: Array<{ id?: string; function?: { name?: string; arguments?: string } }> };
+            const snapToolCalls = snapshot?.choices?.[0]?.message?.tool_calls as Array<{ id?: string; function?: { name?: string; arguments?: string } }> | undefined;
+            const deltaToolCalls = delta?.tool_calls;
+            const deltaMissingName = deltaToolCalls?.length
+                ? deltaToolCalls.some((tc: { function?: { name?: string } }) => !tc.function?.name)
+                : false;
+            let partToEmit: LanguageModelStreamResponsePart = delta;
+            if (deltaMissingName && snapToolCalls?.length) {
+                const completeToolCalls = snapToolCalls
+                    .filter(snap => snap.id && snap.function?.name)
+                    .map(snap => ({
+                        id: snap.id,
+                        function: { name: snap.function!.name!, arguments: snap.function!.arguments ?? '' }
+                    }));
+                if (completeToolCalls.length > 0) {
+                    for (const tc of completeToolCalls) {
+                        if (tc.id && tc.function?.name) {
+                            this.toolCallNames.set(tc.id, { name: tc.function.name, arguments: tc.function.arguments ?? '' });
+                        }
+                    }
+                    partToEmit = { ...delta, tool_calls: completeToolCalls };
+                } else {
+                    return;
+                }
+            } else if (deltaToolCalls?.length) {
+                for (const tc of deltaToolCalls) {
+                    if (tc.id && tc.function?.name) {
+                        this.toolCallNames.set(tc.id, { name: tc.function.name, arguments: tc.function.arguments ?? '' });
+                    }
+                }
+            }
+            this.handleIncoming(partToEmit);
         });
         if (cancellationToken) {
             this.toDispose.push(cancellationToken.onCancellationRequested(() => stream.abort()));

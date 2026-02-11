@@ -86,14 +86,50 @@ export class LanguageModelServiceImpl implements LanguageModelService {
         });
 
         let response = await languageModel.request(languageModelRequest, languageModelRequest.cancellationToken);
+
+        // #region agent log - LanguageModelService_sendRequest_responseType
+        fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: `log_${Date.now()}_lm_sendRequest_responseType`,
+                timestamp: Date.now(),
+                runId: 'pre-fix',
+                hypothesisId: 'H8',
+                location: 'language-model-service.ts:sendRequest',
+                message: 'Language model response type after request',
+                data: {
+                    isStream: isLanguageModelStreamResponse(response),
+                    sessionId: languageModelRequest.sessionId,
+                    requestId: languageModelRequest.requestId,
+                    subRequestId: languageModelRequest.subRequestId ?? null,
+                    languageModelId: languageModel.id,
+                    hasCancellationToken: !!languageModelRequest.cancellationToken
+                }
+            })
+        }).catch(() => { });
+        // #endregion
+
         let storedResponse: LanguageModelExchangeRequest['response'];
         if (isLanguageModelStreamResponse(response)) {
             const parts: LanguageModelStreamResponsePart[] = [];
             response = {
                 ...response,
-                stream: createLoggingAsyncIterable(response.stream,
+                stream: createLoggingAsyncIterable(
+                    response.stream,
                     parts,
-                    () => this.sessionChangedEmitter.fire({ type: 'responseCompleted', requestId: languageModelRequest.subRequestId ?? languageModelRequest.requestId }))
+                    () => this.sessionChangedEmitter.fire({
+                        type: 'responseCompleted',
+                        requestId: languageModelRequest.subRequestId ?? languageModelRequest.requestId
+                    }),
+                    {
+                        sessionId: languageModelRequest.sessionId,
+                        requestId: languageModelRequest.requestId,
+                        subRequestId: languageModelRequest.subRequestId,
+                        languageModelId: languageModel.id,
+                        agentId: languageModelRequest.agentId
+                    }
+                )
             };
             storedResponse = { parts };
         } else {
@@ -158,17 +194,93 @@ export class LanguageModelServiceImpl implements LanguageModelService {
 async function* createLoggingAsyncIterable(
     stream: AsyncIterable<LanguageModelStreamResponsePart>,
     parts: LanguageModelStreamResponsePart[],
-    streamFinished: () => void
+    streamFinished: () => void,
+    meta?: {
+        sessionId: string;
+        requestId: string;
+        subRequestId?: string;
+        languageModelId: string;
+        agentId?: string;
+    }
 ): AsyncIterable<LanguageModelStreamResponsePart> {
+    let partCount = 0;
+    let textPartCount = 0;
+    let lastPartType: string | undefined;
+    let hadError = false;
     try {
         for await (const part of stream) {
             parts.push(part);
+            partCount++;
+            if ('content' in part && typeof (part as { content: unknown }).content === 'string') {
+                textPartCount++;
+                lastPartType = 'text';
+            } else if ('tool_calls' in part) {
+                lastPartType = 'tool_call';
+            } else if ('thought' in part) {
+                lastPartType = 'thinking';
+            } else if ('input_tokens' in part && 'output_tokens' in part) {
+                lastPartType = 'usage';
+            }
             yield part;
         }
     } catch (error) {
-        parts.push({ content: `[NOT FROM LLM] An error occurred: ${error.message}` });
+        hadError = true;
+        parts.push({ content: `[NOT FROM LLM] An error occurred: ${error instanceof Error ? error.message : String(error)}` });
+
+        // #region agent log - LanguageModelService_stream_error
+        fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: `log_${Date.now()}_lm_stream_error`,
+                timestamp: Date.now(),
+                runId: 'pre-fix',
+                hypothesisId: 'H9',
+                location: 'language-model-service.ts:createLoggingAsyncIterable',
+                message: 'Error while consuming LLM stream',
+                data: {
+                    sessionId: meta?.sessionId ?? null,
+                    requestId: meta?.requestId ?? null,
+                    subRequestId: meta?.subRequestId ?? null,
+                    languageModelId: meta?.languageModelId ?? null,
+                    agentId: meta?.agentId ?? null,
+                    partCountSoFar: partCount,
+                    textPartCountSoFar: textPartCount,
+                    lastPartType,
+                    errorMessage: error instanceof Error ? error.message : String(error)
+                }
+            })
+        }).catch(() => { });
+        // #endregion
+
         throw error;
     } finally {
         streamFinished();
+
+        // #region agent log - LanguageModelService_stream_summary
+        fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: `log_${Date.now()}_lm_stream_summary`,
+                timestamp: Date.now(),
+                runId: 'pre-fix',
+                hypothesisId: 'H10',
+                location: 'language-model-service.ts:createLoggingAsyncIterable',
+                message: 'LLM stream completed',
+                data: {
+                    sessionId: meta?.sessionId ?? null,
+                    requestId: meta?.requestId ?? null,
+                    subRequestId: meta?.subRequestId ?? null,
+                    languageModelId: meta?.languageModelId ?? null,
+                    agentId: meta?.agentId ?? null,
+                    partCount,
+                    textPartCount,
+                    lastPartType: lastPartType ?? null,
+                    hadError
+                }
+            })
+        }).catch(() => { });
+        // #endregion
     }
 }

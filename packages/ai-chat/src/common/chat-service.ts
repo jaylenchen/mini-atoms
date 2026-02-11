@@ -415,14 +415,94 @@ export class ChatServiceImpl implements ChatService {
     protected initialAgentSelection(parsedRequest: ParsedChatRequest): ChatAgent | undefined {
         const agentPart = this.getMentionedAgent(parsedRequest);
         if (agentPart) {
-            return this.chatAgentService.getAgent(agentPart.agentId);
+            const mentionedAgent = this.chatAgentService.getAgent(agentPart.agentId);
+
+            // #region agent log - initialAgentSelection_mentioned
+            fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: `log_${Date.now()}_initialAgentSelection_mentioned`,
+                    timestamp: Date.now(),
+                    runId: 'pre-fix',
+                    hypothesisId: 'H4',
+                    location: 'chat-service.ts:initialAgentSelection',
+                    message: 'initialAgentSelection with explicit @agent',
+                    data: {
+                        mentionedAgentId: agentPart.agentId,
+                        resolved: !!mentionedAgent
+                    }
+                })
+            }).catch(() => { });
+            // #endregion
+
+            return mentionedAgent;
         }
         if (this.defaultChatAgentId) {
-            return this.chatAgentService.getAgent(this.defaultChatAgentId.id);
+            const defaultAgent = this.chatAgentService.getAgent(this.defaultChatAgentId.id);
+
+            // #region agent log - initialAgentSelection_default
+            fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: `log_${Date.now()}_initialAgentSelection_default`,
+                    timestamp: Date.now(),
+                    runId: 'pre-fix',
+                    hypothesisId: 'H5',
+                    location: 'chat-service.ts:initialAgentSelection',
+                    message: 'initialAgentSelection using injected defaultChatAgentId',
+                    data: {
+                        defaultChatAgentId: this.defaultChatAgentId.id,
+                        resolved: !!defaultAgent
+                    }
+                })
+            }).catch(() => { });
+            // #endregion
+
+            return defaultAgent;
         }
         if (this.fallbackChatAgentId) {
-            return this.chatAgentService.getAgent(this.fallbackChatAgentId.id);
+            const fallbackAgent = this.chatAgentService.getAgent(this.fallbackChatAgentId.id);
+
+            // #region agent log - initialAgentSelection_fallback
+            fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: `log_${Date.now()}_initialAgentSelection_fallback`,
+                    timestamp: Date.now(),
+                    runId: 'pre-fix',
+                    hypothesisId: 'H6',
+                    location: 'chat-service.ts:initialAgentSelection',
+                    message: 'initialAgentSelection using injected fallbackChatAgentId',
+                    data: {
+                        fallbackChatAgentId: this.fallbackChatAgentId.id,
+                        resolved: !!fallbackAgent
+                    }
+                })
+            }).catch(() => { });
+            // #endregion
+
+            return fallbackAgent;
         }
+
+        // #region agent log - initialAgentSelection_none
+        fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: `log_${Date.now()}_initialAgentSelection_none`,
+                timestamp: Date.now(),
+                runId: 'pre-fix',
+                hypothesisId: 'H7',
+                location: 'chat-service.ts:initialAgentSelection',
+                message: 'initialAgentSelection found no agent',
+                data: {}
+            })
+        }).catch(() => { });
+        // #endregion
+
         return undefined;
     }
 

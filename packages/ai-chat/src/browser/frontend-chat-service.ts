@@ -19,6 +19,7 @@ import { ChatAgent, ChatAgentLocation, ChatChangeEvent, ChatServiceImpl, ChatSes
 import { PreferenceService } from '@theia/core/lib/common';
 import { DEFAULT_CHAT_AGENT_PREF, PIN_CHAT_AGENT_PREF } from '../common/ai-chat-preferences';
 import { ChangeSetFileService } from './change-set-file-service';
+import { PreferenceScope } from '@theia/core';
 
 /**
  * Customizes the ChatServiceImpl to consider preference based default chat agent
@@ -38,22 +39,97 @@ export class FrontendChatServiceImpl extends ChatServiceImpl {
 
     protected override initialAgentSelection(parsedRequest: ParsedChatRequest): ChatAgent | undefined {
         const agentPart = this.getMentionedAgent(parsedRequest);
+        let configuredDefaultChatAgent: ChatAgent | undefined;
         if (!agentPart) {
-            const configuredDefaultChatAgent = this.getConfiguredDefaultChatAgent();
-            if (configuredDefaultChatAgent) {
-                return configuredDefaultChatAgent;
-            }
+            configuredDefaultChatAgent = this.getConfiguredDefaultChatAgent();
         }
-        return super.initialAgentSelection(parsedRequest);
+
+        // #region agent log - initialAgentSelection
+        fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: `log_${Date.now()}_initialAgentSelection`,
+                timestamp: Date.now(),
+                runId: 'pre-fix',
+                hypothesisId: 'H1',
+                location: 'frontend-chat-service.ts:initialAgentSelection',
+                message: 'initialAgentSelection decision inputs',
+                data: {
+                    hasAgentMention: !!agentPart,
+                    mentionedAgentId: agentPart?.agentId ?? null,
+                    configuredDefaultAgentId: configuredDefaultChatAgent?.id ?? null
+                }
+            })
+        }).catch(() => { });
+        // #endregion
+
+        if (!agentPart && configuredDefaultChatAgent) {
+            return configuredDefaultChatAgent;
+        }
+
+        const result = super.initialAgentSelection(parsedRequest);
+
+        // #region agent log - initialAgentSelection result
+        fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: `log_${Date.now()}_initialAgentSelection_result`,
+                timestamp: Date.now(),
+                runId: 'pre-fix',
+                hypothesisId: 'H2',
+                location: 'frontend-chat-service.ts:initialAgentSelection',
+                message: 'initialAgentSelection result agent',
+                data: {
+                    resultAgentId: result?.id ?? null
+                }
+            })
+        }).catch(() => { });
+        // #endregion
+
+        return result;
     }
 
     protected getConfiguredDefaultChatAgent(): ChatAgent | undefined {
         const configuredDefaultChatAgentId = this.preferenceService.get<string>(DEFAULT_CHAT_AGENT_PREF, undefined);
         const configuredDefaultChatAgent = configuredDefaultChatAgentId ? this.chatAgentService.getAgent(configuredDefaultChatAgentId) : undefined;
+
+        // #region agent log - getConfiguredDefaultChatAgent
+        fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: `log_${Date.now()}_getConfiguredDefaultChatAgent`,
+                timestamp: Date.now(),
+                runId: 'pre-fix',
+                hypothesisId: 'H3',
+                location: 'frontend-chat-service.ts:getConfiguredDefaultChatAgent',
+                message: 'configured default chat agent resolution',
+                data: {
+                    configuredDefaultChatAgentId: configuredDefaultChatAgentId ?? null,
+                    hasResolvedAgent: !!configuredDefaultChatAgent
+                }
+            })
+        }).catch(() => { });
+        // #endregion
+
         if (configuredDefaultChatAgentId && !configuredDefaultChatAgent) {
-            this.logger.warn(`The configured default chat agent with id '${configuredDefaultChatAgentId}' does not exist or is disabled.`);
+            // Migrate legacy or invalid default agent ids to MiniAtoms.
+            if (configuredDefaultChatAgentId === 'Coder') {
+                this.preferenceService.set(DEFAULT_CHAT_AGENT_PREF, 'MiniAtoms', PreferenceScope.User);
+            } else {
+                this.logger.warn(`The configured default chat agent with id '${configuredDefaultChatAgentId}' does not exist or is disabled.`);
+            }
         }
-        return configuredDefaultChatAgent;
+
+        if (configuredDefaultChatAgent) {
+            return configuredDefaultChatAgent;
+        }
+
+        // Product default: fall back to MiniAtoms when no usable configured agent exists.
+        const miniAtomsAgent = this.chatAgentService.getAgent('MiniAtoms');
+        return miniAtomsAgent;
     }
 
     override createSession(location?: ChatAgentLocation, options?: SessionOptions, pinnedAgent?: ChatAgent): ChatSession {

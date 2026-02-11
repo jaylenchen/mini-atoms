@@ -486,39 +486,126 @@ export abstract class AbstractStreamParsingChatAgent extends AbstractChatAgent {
     }
 
     protected async addStreamResponse(languageModelResponse: LanguageModelStreamResponse, request: MutableChatRequestModel): Promise<void> {
+        // #region agent log - AbstractStreamParsingChatAgent_addStreamResponse_start
+        fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: `log_${Date.now()}_chat_stream_start`,
+                timestamp: Date.now(),
+                runId: 'pre-fix',
+                hypothesisId: 'H11',
+                location: 'chat-agents.ts:addStreamResponse',
+                message: 'Chat stream started for request',
+                data: {
+                    agentId: this.id,
+                    sessionId: request.session.id,
+                    requestId: request.id,
+                    existingContentCount: request.response.response.content.length
+                }
+            })
+        }).catch(() => { });
+        // #endregion
+
         let completeTextBuffer = '';
         let startIndex = request.response.response.content.length;
-        for await (const token of languageModelResponse.stream) {
-            // Skip unknown tokens. For example OpenAI sends empty tokens around tool calls
-            if (!isLanguageModelStreamResponsePart(token)) {
-                console.debug(`Unknown token: '${JSON.stringify(token)}'. Skipping`);
-                continue;
-            }
-            const newContent = this.parse(token, request);
-            if (!isTextResponsePart(token)) {
-                // For non-text tokens (like tool calls), add them directly
-                if (isArray(newContent)) {
-                    request.response.response.addContents(newContent);
-                } else {
-                    request.response.response.addContent(newContent);
+        let tokenCount = 0;
+        let textTokenCount = 0;
+        let lastTokenKind: string | undefined;
+
+        try {
+            for await (const token of languageModelResponse.stream) {
+                tokenCount++;
+                // Skip unknown tokens. For example OpenAI sends empty tokens around tool calls
+                if (!isLanguageModelStreamResponsePart(token)) {
+                    console.debug(`Unknown token: '${JSON.stringify(token)}'. Skipping`);
+                    continue;
                 }
-                // And reset the marker index and the text buffer as we skip matching across non-text tokens
-                startIndex = request.response.response.content.length;
-                completeTextBuffer = '';
-            } else {
-                // parse the entire text so far (since beginning of the stream or last non-text token)
-                // and replace the entire content with the currently parsed content parts
-                completeTextBuffer += token.content;
+                const newContent = this.parse(token, request);
+                if (!isTextResponsePart(token)) {
+                    // For non-text tokens (like tool calls), add them directly
+                    if (isArray(newContent)) {
+                        request.response.response.addContents(newContent);
+                    } else {
+                        request.response.response.addContent(newContent);
+                    }
+                    lastTokenKind = isToolCallResponsePart(token)
+                        ? 'tool_call'
+                        : isThinkingResponsePart(token)
+                            ? 'thinking'
+                            : isUsageResponsePart(token)
+                                ? 'usage'
+                                : 'unknown_non_text';
+                    // And reset the marker index and the text buffer as we skip matching across non-text tokens
+                    startIndex = request.response.response.content.length;
+                    completeTextBuffer = '';
+                } else {
+                    textTokenCount++;
+                    lastTokenKind = 'text';
+                    // parse the entire text so far (since beginning of the stream or last non-text token)
+                    // and replace the entire content with the currently parsed content parts
+                    completeTextBuffer += token.content;
 
-                const parsedContents = this.parseContents(completeTextBuffer, request);
-                const contentBeforeMarker = startIndex > 0
-                    ? request.response.response.content.slice(0, startIndex)
-                    : [];
+                    const parsedContents = this.parseContents(completeTextBuffer, request);
+                    const contentBeforeMarker = startIndex > 0
+                        ? request.response.response.content.slice(0, startIndex)
+                        : [];
 
-                request.response.response.clearContent();
-                request.response.response.addContents(contentBeforeMarker);
-                request.response.response.addContents(parsedContents);
+                    request.response.response.clearContent();
+                    request.response.response.addContents(contentBeforeMarker);
+                    request.response.response.addContents(parsedContents);
+                }
             }
+        } catch (error) {
+            // #region agent log - AbstractStreamParsingChatAgent_addStreamResponse_error
+            fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: `log_${Date.now()}_chat_stream_error`,
+                    timestamp: Date.now(),
+                    runId: 'pre-fix',
+                    hypothesisId: 'H12',
+                    location: 'chat-agents.ts:addStreamResponse',
+                    message: 'Error while processing chat stream',
+                    data: {
+                        agentId: this.id,
+                        sessionId: request.session.id,
+                        requestId: request.id,
+                        tokenCount,
+                        textTokenCount,
+                        lastTokenKind: lastTokenKind ?? null,
+                        errorMessage: error instanceof Error ? error.message : String(error)
+                    }
+                })
+            }).catch(() => { });
+            // #endregion
+
+            throw error;
+        } finally {
+            // #region agent log - AbstractStreamParsingChatAgent_addStreamResponse_summary
+            fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: `log_${Date.now()}_chat_stream_summary`,
+                    timestamp: Date.now(),
+                    runId: 'pre-fix',
+                    hypothesisId: 'H13',
+                    location: 'chat-agents.ts:addStreamResponse',
+                    message: 'Chat stream completed for request',
+                    data: {
+                        agentId: this.id,
+                        sessionId: request.session.id,
+                        requestId: request.id,
+                        tokenCount,
+                        textTokenCount,
+                        lastTokenKind: lastTokenKind ?? null,
+                        finalContentCount: request.response.response.content.length
+                    }
+                })
+            }).catch(() => { });
+            // #endregion
         }
     }
 

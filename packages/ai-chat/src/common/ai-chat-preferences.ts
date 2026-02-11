@@ -33,6 +33,7 @@ export const aiChatPreferences: PreferenceSchema = {
                 'Optional: <agent-name> of the Chat Agent that shall be invoked, if no agent is explicitly mentioned with @<agent-name> in the user query. \
         If no Default Agent is configured, Theia´s defaults will be applied.'),
             title: AI_CORE_PREFERENCES_TITLE,
+            default: 'MiniAtoms',
         },
         [PIN_CHAT_AGENT_PREF]: {
             type: 'boolean',

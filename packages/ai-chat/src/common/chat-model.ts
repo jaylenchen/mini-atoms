@@ -2766,6 +2766,28 @@ export class MutableChatResponseModel implements ChatResponseModel {
     }
 
     cancel(): void {
+        // #region agent log - MutableChatResponseModel_cancel
+        fetch('http://127.0.0.1:7242/ingest/1574a3d6-646c-40e3-aab6-3e8748b9cadf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: `log_${Date.now()}_chat_response_cancel`,
+                timestamp: Date.now(),
+                runId: 'pre-fix',
+                hypothesisId: 'H14',
+                location: 'chat-model.ts:MutableChatResponseModel.cancel',
+                message: 'Chat response cancel invoked',
+                data: {
+                    requestId: this._requestId,
+                    agentId: this._agentId ?? null,
+                    wasComplete: this._isComplete,
+                    hasError: this._isError,
+                    progressMessageCount: this._progressMessages?.length ?? 0
+                }
+            })
+        }).catch(() => { });
+        // #endregion
+
         this._cancellationToken.cancel();
         this._isComplete = true;
         this._isWaitingForInput = false;

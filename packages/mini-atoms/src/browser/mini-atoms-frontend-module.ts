@@ -9,14 +9,24 @@
 // *****************************************************************************
 
 import { ContainerModule, interfaces } from '@theia/core/shared/inversify';
-import { WidgetFactory, bindViewContribution, noopWidgetStatusBarContribution, WidgetStatusBarContribution, FrontendApplicationContribution } from '@theia/core/lib/browser';
+import {
+    ApplicationShell,
+    WidgetFactory,
+    bindViewContribution,
+    noopWidgetStatusBarContribution,
+    WidgetStatusBarContribution,
+    FrontendApplicationContribution,
+} from '@theia/core/lib/browser';
 import { MiniAtomsContribution } from './mini-atoms-contribution';
 import { MiniAtomsWidget } from './mini-atoms-widget';
 import { MiniAtomsStorageService } from './mini-atoms-storage';
 import { MiniAtomsChatIntegration } from './mini-atoms-chat-integration';
+import { MiniAtomsApplicationShell } from './mini-atoms-application-shell';
 import '../../src/browser/style/index.css';
 
-export default new ContainerModule((bind: interfaces.Bind) => {
+export default new ContainerModule((bind: interfaces.Bind, _unbind: interfaces.Unbind, _isBound: interfaces.IsBound, rebind: interfaces.Rebind) => {
+    bind(MiniAtomsApplicationShell).toSelf().inSingletonScope();
+    rebind(ApplicationShell).toService(MiniAtomsApplicationShell);
     bindViewContribution(bind, MiniAtomsContribution);
     bind(WidgetStatusBarContribution).toConstantValue(noopWidgetStatusBarContribution(MiniAtomsWidget));
     bind(MiniAtomsChatIntegration).toSelf().inSingletonScope();

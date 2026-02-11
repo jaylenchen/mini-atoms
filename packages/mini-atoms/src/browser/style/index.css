@@ -1,3 +1,16 @@
+/* Left-right only shell layout: hide main area so only left and right panels are visible */
+.mini-atoms-left-right-layout #theia-bottom-split-panel {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    overflow: hidden;
+    visibility: hidden;
+}
+/* Hide the first split handle (between left and hidden center); keep the second for left/right resizing */
+.mini-atoms-left-right-layout #theia-left-right-split-panel > .lm-SplitPanel-handle:first-of-type {
+    display: none !important;
+}
+
 /* Mini Atoms widget styles */
 .mini-atoms-widget {
     display: flex;
@@ -12,6 +25,17 @@
     min-height: 0;
     padding: 12px;
     gap: 12px;
+}
+
+/* Preview area: distinct background from the chat panel (right side) */
+.mini-atoms-preview-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: var(--theia-panel-background, var(--theia-editorInlayHint-background, #2d2d30));
+    border-radius: 8px;
+    padding: 8px;
 }
 
 /* Atoms-like layout: compact input at top, preview dominant in left panel */
@@ -49,18 +73,11 @@
     flex-wrap: wrap;
 }
 
-.mini-atoms-preview-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-}
-
 .mini-atoms-preview-container {
     flex: 1;
     min-height: 200px;
     border: 1px solid var(--theia-panelBorder);
-    border-radius: 8px;
+    border-radius: 6px;
     background: var(--theia-editorBackground);
     position: relative;
     display: flex;

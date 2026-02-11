@@ -42,6 +42,7 @@ export class AIHistoryView extends ReactWidget implements StatefulWidget {
     static LABEL = nls.localize('theia/ai/history/view/label', 'AI Agent History [Beta]');
 
     protected _state: AIHistoryView.State = { chronological: false, compactView: true, renderNewlines: true };
+    protected readonly visibleAgentIds: ReadonlySet<string> = new Set(['Universal', 'MiniAtoms']);
 
     constructor() {
         super();
@@ -83,7 +84,10 @@ export class AIHistoryView extends ReactWidget implements StatefulWidget {
     protected init(): void {
         this.update();
         this.toDispose.push(this.languageModelService.onSessionChanged((event: SessionEvent) => this.historyContentUpdated(event)));
-        this.selectAgent(this.agentService.getAllAgents()[0]);
+        const initialAgent = this.getVisibleAgents()[0];
+        if (initialAgent) {
+            this.selectAgent(initialAgent);
+        }
     }
 
     protected selectAgent(agent: Agent | undefined): void {
@@ -96,9 +100,9 @@ export class AIHistoryView extends ReactWidget implements StatefulWidget {
 
     render(): React.ReactNode {
         const selectionChange = (value: SelectOption) => {
-            this.selectAgent(this.agentService.getAllAgents().find(agent => agent.id === value.value));
+            this.selectAgent(this.getVisibleAgents().find(agent => agent.id === value.value));
         };
-        const agents = this.agentService.getAllAgents();
+        const agents = this.getVisibleAgents();
         if (agents.length === 0) {
             return (
                 <div className='agent-history-widget'>
@@ -130,7 +134,7 @@ export class AIHistoryView extends ReactWidget implements StatefulWidget {
         const exchanges = this.getExchangesByAgent(this.state.selectedAgentId);
 
         if (exchanges.length === 0) {
-            const selectedAgent = this.agentService.getAllAgents().find(agent => agent.id === this.state.selectedAgentId);
+            const selectedAgent = this.getVisibleAgents().find(agent => agent.id === this.state.selectedAgentId);
             return <div className='theia-card no-content'>
                 {nls.localize('theia/ai/history/view/noHistoryForAgent', 'No history available for the selected agent \'{0}\'', selectedAgent?.name || this.state.selectedAgentId)}
             </div>;
@@ -190,5 +194,9 @@ export class AIHistoryView extends ReactWidget implements StatefulWidget {
 
     get isRenderNewlines(): boolean {
         return this.state.renderNewlines === true;
+    }
+
+    protected getVisibleAgents(): Agent[] {
+        return this.agentService.getAllAgents().filter(agent => this.visibleAgentIds.has(agent.id));
     }
 }

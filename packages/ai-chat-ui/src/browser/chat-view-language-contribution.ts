@@ -76,7 +76,10 @@ export class ChatViewLanguageContribution implements FrontendApplicationContribu
     protected registerCompletionProviders(): void {
         this.registerStandardCompletionProvider({
             triggerCharacter: PromptText.AGENT_CHAR,
-            getItems: () => this.agentService.getAgents(),
+            getItems: () => this.agentService
+                .getAgents()
+                // Only expose supported chat agents in @-completion.
+                .filter(agent => agent.id === 'Universal' || agent.id === 'MiniAtoms'),
             kind: monaco.languages.CompletionItemKind.Value,
             getId: agent => `${agent.id} `,
             getName: agent => agent.name,

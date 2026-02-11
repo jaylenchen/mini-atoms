@@ -79,7 +79,12 @@ export class MiniAtomsChatIntegration implements FrontendApplicationContribution
         if (widget) {
             widget.setPreviewHtml(html);
         }
-        this.storageService.saveCurrent({ description: description.trim() || 'From Chat', html }).then(() => { });
+        this.storageService.saveCurrent({ description: description.trim() || 'From Chat', html }).then(() => {
+            // After persisting, refresh preview/history so the bottom History list updates immediately.
+            if (widget) {
+                widget.refreshFromStorage();
+            }
+        });
     }
 
     onStop(): void {

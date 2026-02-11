@@ -83,6 +83,8 @@ export class AIAgentConfigurationWidget extends AIListDetailConfigurationWidget<
     protected parsedPromptParts: ParsedPrompt | undefined;
     protected isLoadingDetails = false;
 
+    protected readonly visibleAgentIds: ReadonlySet<string> = new Set(['Universal', 'MiniAtoms']);
+
     @postConstruct()
     protected init(): void {
         this.id = AIAgentConfigurationWidget.ID;
@@ -131,7 +133,9 @@ export class AIAgentConfigurationWidget extends AIListDetailConfigurationWidget<
     }
 
     protected async loadItems(): Promise<void> {
-        this.items = this.agentService.getAllAgents();
+        const allAgents = this.agentService.getAllAgents();
+        // Only show a curated subset of agents in the configuration UI.
+        this.items = allAgents.filter(agent => this.visibleAgentIds.has(agent.id));
         const activeAgent = this.aiConfigurationSelectionService.getActiveAgent();
         if (activeAgent) {
             this.selectedItem = activeAgent;

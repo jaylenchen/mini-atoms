@@ -65,6 +65,14 @@ export class MiniAtomsWidget extends ReactWidget {
         this.update();
     }
 
+    /**
+     * Reload current preview and history from storage.
+     * Can be called from external integrations when a new app is saved.
+     */
+    public async refreshFromStorage(): Promise<void> {
+        await this.loadStored();
+    }
+
     /** Load a past app from history. */
     protected onLoadHistoryItem = (app: StoredApp): void => {
         this.previewHtml = app.html;

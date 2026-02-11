@@ -95,7 +95,8 @@ export class ModelAliasesConfigurationWidget extends AIListDetailConfigurationWi
     }
 
     protected async loadMatchingAgentIdsForAllAliases(): Promise<void> {
-        const agents = this.agentService.getAllAgents();
+        const visibleAgentIds = new Set(['Universal', 'MiniAtoms']);
+        const agents = this.agentService.getAllAgents().filter(agent => visibleAgentIds.has(agent.id));
         const aliasMap: Map<string, string[]> = new Map();
         for (const alias of this.items) {
             const matchingAgentIds: string[] = [];
@@ -145,7 +146,10 @@ export class ModelAliasesConfigurationWidget extends AIListDetailConfigurationWi
         const selectedModelId = alias.selectedModelId ?? '';
         const isInvalidModel = !!selectedModelId && !availableModelIds.includes(alias.selectedModelId ?? '');
         const agentIds = this.matchingAgentIdsForAliasMap.get(alias.id) || [];
-        const agents = this.agentService.getAllAgents().filter(agent => agentIds.includes(agent.id));
+        const visibleAgentIds = new Set(['Universal', 'MiniAtoms']);
+        const agents = this.agentService.getAllAgents()
+            .filter(agent => visibleAgentIds.has(agent.id))
+            .filter(agent => agentIds.includes(agent.id));
         const resolvedModel = this.resolvedModelForAlias.get(alias.id);
 
         return (

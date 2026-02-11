@@ -77,6 +77,11 @@ export class AIPromptFragmentsConfigurationWidget extends ReactWidget {
     protected availableAgents: Agent[] = [];
 
     /**
+     * Only these agents should be visible in the UI.
+     */
+    protected readonly visibleAgentIds: ReadonlySet<string> = new Set(['Universal', 'MiniAtoms']);
+
+    /**
      * Maps prompt variant set IDs to their resolved variant IDs
      */
     protected effectiveVariantIds: Map<string, string | undefined> = new Map();
@@ -180,9 +185,11 @@ export class AIPromptFragmentsConfigurationWidget extends ReactWidget {
      * @returns Array of agents that use the prompt variant set
      */
     protected getAgentsUsingPromptVariantId(promptVariantSetId: string): Agent[] {
-        return this.availableAgents.filter((agent: Agent) =>
-            agent.prompts.find(promptVariantSet => promptVariantSet.id === promptVariantSetId)
-        );
+        return this.availableAgents
+            .filter(agent => this.visibleAgentIds.has(agent.id))
+            .filter((agent: Agent) =>
+                agent.prompts.find(promptVariantSet => promptVariantSet.id === promptVariantSetId)
+            );
     }
 
     protected togglePromptVariantSetExpansion = (promptVariantSetId: string): void => {
@@ -376,9 +383,12 @@ export class AIPromptFragmentsConfigurationWidget extends ReactWidget {
 
                 <div className="prompt-variants-container">
                     <h3 className="section-header">{nls.localize('theia/ai/core/promptFragmentsConfiguration/promptVariantsHeader', 'Prompt Variant Sets')}</h3>
-                    {Array.from(this.promptVariantsMap.entries()).map(([promptVariantSetId, variantIds]) =>
-                        this.renderPromptVariantSet(promptVariantSetId, variantIds)
-                    )}
+                    {Array.from(this.promptVariantsMap.entries())
+                        // Only show prompt variant sets that are used by visible agents.
+                        .filter(([promptVariantSetId]) => this.getAgentsUsingPromptVariantId(promptVariantSetId).length > 0)
+                        .map(([promptVariantSetId, variantIds]) =>
+                            this.renderPromptVariantSet(promptVariantSetId, variantIds)
+                        )}
                 </div>
 
                 {nonSystemPromptFragments.size > 0 && <div className="prompt-fragments-container">

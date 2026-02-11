@@ -16,7 +16,6 @@
 
 import {
     AbstractStreamParsingChatAgent,
-    ChatAgent,
     ChatModel,
     MutableChatRequestModel,
     lastProgressMessage,

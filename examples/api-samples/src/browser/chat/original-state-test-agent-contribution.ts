@@ -16,7 +16,6 @@
 
 import {
     AbstractStreamParsingChatAgent,
-    ChatAgent,
     MutableChatRequestModel,
     MarkdownChatResponseContentImpl,
     SystemMessageDescription

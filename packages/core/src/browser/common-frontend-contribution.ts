@@ -191,13 +191,9 @@ export class CommonFrontendContribution implements FrontendApplicationContributi
         this.preferences.onPreferenceChanged(e => this.handlePreferenceChange(e, app));
 
         app.shell.initialized.then(() => {
-            app.shell.leftPanelHandler.addBottomMenu({
-                id: 'settings-menu',
-                iconClass: codicon('settings-gear'),
-                title: nls.localizeByDefault(CommonCommands.MANAGE_CATEGORY),
-                menuPath: MANAGE_MENU,
-                order: 0,
-            });
+            // The default settings bottom menu is intentionally not added in this product.
+            // If needed in the future, it can be re-enabled here by adding a bottom menu
+            // entry with id 'settings-menu'.
             const accountsMenu: SidebarMenu = {
                 id: 'accounts-menu',
                 iconClass: codicon('account'),

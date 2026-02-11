@@ -202,15 +202,11 @@ export class IdeChatWelcomeMessageProvider implements ChatWelcomeMessageProvider
             <LocalizedMarkdown
                 localizationKey="theia/ai/ide/chatWelcomeMessage"
                 defaultMarkdown={`
-# Ask the Theia IDE AI
+# Ask Mini Atoms
 
-To talk to a specialized agent, simply start your message with *@* followed by the agent's name: *@{0}*, *@{1}*, *@{2}*, and more.
-
-Attach context: use variables, like *#{3}*, *#{4}* (current file), *#{5}* or click {6}.
-
-Lean more in the [documentation](https://theia-ide.org/docs/user_ai/#chat).
+Use *@MiniAtoms* in the chat on the right and describe the page or app you want. Mini Atoms will render the result in the left preview.
 `}
-                args={['Coder', 'Architect', 'Universal', 'file', '_f', 'selectedText', '<span class="codicon codicon-add"></span>']}
+                args={[]}
                 markdownRenderer={this.markdownRenderer}
                 className="theia-WelcomeMessage-Content"
                 markdownOptions={{ supportHtml: true }}

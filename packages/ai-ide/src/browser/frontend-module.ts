@@ -123,25 +123,20 @@ export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
 
     bind(ArchitectAgent).toSelf().inSingletonScope();
     bind(Agent).toService(ArchitectAgent);
-    bind(ChatAgent).toService(ArchitectAgent);
 
     bind(CoderAgent).toSelf().inSingletonScope();
     bind(Agent).toService(CoderAgent);
-    bind(ChatAgent).toService(CoderAgent);
 
     bind(TaskContextAgent).toSelf().inSingletonScope();
     bind(Agent).toService(TaskContextAgent);
     bind(ProjectInfoAgent).toSelf().inSingletonScope();
     bind(Agent).toService(ProjectInfoAgent);
-    bind(ChatAgent).toService(ProjectInfoAgent);
 
     bind(CreateSkillAgent).toSelf().inSingletonScope();
     bind(Agent).toService(CreateSkillAgent);
-    bind(ChatAgent).toService(CreateSkillAgent);
 
     bind(OrchestratorChatAgent).toSelf().inSingletonScope();
     bind(Agent).toService(OrchestratorChatAgent);
-    bind(ChatAgent).toService(OrchestratorChatAgent);
 
     bind(UniversalChatAgent).toSelf().inSingletonScope();
     bind(Agent).toService(UniversalChatAgent);
@@ -149,11 +144,9 @@ export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
 
     bind(AppTesterChatAgent).toSelf().inSingletonScope();
     bind(Agent).toService(AppTesterChatAgent);
-    bind(ChatAgent).toService(AppTesterChatAgent);
 
     bind(GitHubChatAgent).toSelf().inSingletonScope();
     bind(Agent).toService(GitHubChatAgent);
-    bind(ChatAgent).toService(GitHubChatAgent);
     bind(BrowserAutomation).toDynamicValue(ctx => {
         const provider = ctx.container.get<ServiceConnectionProvider>(RemoteConnectionProvider);
         return provider.createProxy<BrowserAutomation>(browserAutomationPath);
@@ -161,7 +154,6 @@ export default new ContainerModule((bind, _unbind, _isBound, rebind) => {
 
     bind(CommandChatAgent).toSelf().inSingletonScope();
     bind(Agent).toService(CommandChatAgent);
-    bind(ChatAgent).toService(CommandChatAgent);
 
     bind(ChatWelcomeMessageProvider).to(IdeChatWelcomeMessageProvider).inSingletonScope();
     bind(ChatAgentRecommendationService).to(DefaultChatAgentRecommendationService).inSingletonScope();

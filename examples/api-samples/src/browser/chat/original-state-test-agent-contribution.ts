@@ -31,7 +31,6 @@ import { WorkspaceService } from '@theia/workspace/lib/browser';
 export function bindOriginalStateTestAgentContribution(bind: interfaces.Bind): void {
     bind(OriginalStateTestAgent).toSelf().inSingletonScope();
     bind(Agent).toService(OriginalStateTestAgent);
-    bind(ChatAgent).toService(OriginalStateTestAgent);
 }
 
 /**

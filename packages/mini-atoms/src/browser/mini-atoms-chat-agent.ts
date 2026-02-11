@@ -18,7 +18,7 @@ import { nls } from '@theia/core';
 import { injectable } from '@theia/core/shared/inversify';
 import { MINI_ATOMS_HTML_OUTPUT_INSTRUCTION } from '../common/code-extractor';
 
-export const MINI_ATOMS_AGENT_ID = 'Mini Atoms';
+export const MINI_ATOMS_AGENT_ID = 'MiniAtoms';
 
 const MINI_ATOMS_SYSTEM_PROMPT_ID = 'mini-atoms-agent-prompt';
 

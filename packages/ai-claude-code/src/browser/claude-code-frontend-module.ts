@@ -14,7 +14,6 @@
 // SPDX-License-Identifier: EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0
 // *****************************************************************************
 
-import { ChatAgent } from '@theia/ai-chat';
 import { ChatResponsePartRenderer } from '@theia/ai-chat-ui/lib/browser/chat-response-part-renderer';
 import { Agent } from '@theia/ai-core';
 import { CommandContribution, PreferenceContribution } from '@theia/core';
@@ -66,7 +65,6 @@ export default new ContainerModule(bind => {
 
     bind(ClaudeCodeChatAgent).toSelf().inSingletonScope();
     bind(Agent).toService(ClaudeCodeChatAgent);
-    bind(ChatAgent).toService(ClaudeCodeChatAgent);
 
     bind(TodoWriteRenderer).toSelf().inSingletonScope();
     bind(ChatResponsePartRenderer).toService(TodoWriteRenderer);

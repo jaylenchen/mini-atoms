@@ -95,6 +95,8 @@ export class MiniAtomsWidget extends ReactWidget {
     }
 
     protected render(): React.ReactNode {
+        const hasHistory = this.historyList.length > 0;
+        const hasCode = !!this.previewHtml;
         return <div className='mini-atoms-container'>
             <div className='mini-atoms-preview-section'>
                 <label className='mini-atoms-label'>{nls.localizeByDefault('Preview')}</label>
@@ -116,24 +118,40 @@ export class MiniAtomsWidget extends ReactWidget {
                     )}
                 </div>
             </div>
-            {this.historyList.length > 0 && (
-                <div className='mini-atoms-history-section'>
-                    <label className='mini-atoms-label'>{nls.localizeByDefault('History')}</label>
-                    <ul className='mini-atoms-history-list'>
-                        {this.historyList.map(app => (
-                            <li key={app.id} className='mini-atoms-history-item'>
-                                <button
-                                    type='button'
-                                    className='mini-atoms-history-btn'
-                                    onClick={() => this.onLoadHistoryItem(app)}
-                                    title={app.description}
-                                >
-                                    <span className='mini-atoms-history-desc'>{app.description.slice(0, 60)}{app.description.length > 60 ? '…' : ''}</span>
-                                    <span className='mini-atoms-history-date'>{this.formatHistoryDate(app.createdAt)}</span>
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
+            {(hasHistory || hasCode) && (
+                <div className='mini-atoms-bottom-row'>
+                    {hasCode && (
+                        <div className='mini-atoms-code-section'>
+                            <label className='mini-atoms-label'>{nls.localizeByDefault('Code')}</label>
+                            <pre className='mini-atoms-code-block'>
+                                {this.previewHtml}
+                            </pre>
+                        </div>
+                    )}
+                    {hasHistory && (
+                        <div className='mini-atoms-history-section'>
+                            <label className='mini-atoms-label'>{nls.localizeByDefault('History')}</label>
+                            <ul className='mini-atoms-history-list'>
+                                {this.historyList.map(app => (
+                                    <li key={app.id} className='mini-atoms-history-item'>
+                                        <button
+                                            type='button'
+                                            className='mini-atoms-history-btn'
+                                            onClick={() => this.onLoadHistoryItem(app)}
+                                            title={app.description}
+                                        >
+                                            <span className='mini-atoms-history-desc'>
+                                                {app.description.slice(0, 60)}{app.description.length > 60 ? '…' : ''}
+                                            </span>
+                                            <span className='mini-atoms-history-date'>
+                                                {this.formatHistoryDate(app.createdAt)}
+                                            </span>
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
             )}
         </div>;

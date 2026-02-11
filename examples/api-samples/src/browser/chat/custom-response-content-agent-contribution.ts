@@ -35,7 +35,6 @@ import { ReactNode } from '@theia/core/shared/react';
 export function bindCustomResponseContentRendererContribution(bind: interfaces.Bind): void {
     bind(CustomResponseContentRendererAgent).toSelf().inSingletonScope();
     bind(Agent).toService(CustomResponseContentRendererAgent);
-    bind(ChatAgent).toService(CustomResponseContentRendererAgent);
 
     bind(ChatContentDeserializerContribution).to(CustomContentDeserializerContribution).inSingletonScope();
 

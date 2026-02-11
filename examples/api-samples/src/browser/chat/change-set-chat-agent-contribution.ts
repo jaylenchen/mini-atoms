@@ -32,7 +32,6 @@ import { WorkspaceService } from '@theia/workspace/lib/browser';
 export function bindChangeSetChatAgentContribution(bind: interfaces.Bind): void {
     bind(ChangeSetChatAgent).toSelf().inSingletonScope();
     bind(Agent).toService(ChangeSetChatAgent);
-    bind(ChatAgent).toService(ChangeSetChatAgent);
 }
 
 /**

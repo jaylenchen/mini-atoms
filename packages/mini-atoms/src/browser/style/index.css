@@ -1,4 +1,4 @@
-/* Left-right only shell layout: hide main area so only left and right panels are visible */
+/* Left-right only shell layout: hide main area and bottom area so only left and right panels are visible */
 .mini-atoms-left-right-layout #theia-bottom-split-panel {
     width: 0 !important;
     min-width: 0 !important;
@@ -10,7 +10,6 @@
 .mini-atoms-left-right-layout #theia-left-right-split-panel > .lm-SplitPanel-handle:first-of-type {
     display: none !important;
 }
-
 /* Mini Atoms widget styles */
 .mini-atoms-widget {
     display: flex;
@@ -115,11 +114,45 @@
     color: var(--theia-errorForeground);
 }
 
-.mini-atoms-history-section {
+.mini-atoms-bottom-row {
     flex-shrink: 0;
-    max-height: 140px;
+    display: flex;
+    gap: 8px;
+    /* 固定一行高度，避免撑开整个左侧面板 */
+    max-height: 260px;
+    min-height: 160px;
+}
+
+.mini-atoms-history-section {
+    flex: 0 0 40%;
     display: flex;
     flex-direction: column;
+    min-width: 0;
+}
+
+/* Full history widget layout */
+.mini-atoms-history-widget {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.mini-atoms-history-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.mini-atoms-history-list-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.mini-atoms-history-list-full {
+    flex: 1;
 }
 
 .mini-atoms-history-list {
@@ -161,4 +194,31 @@
 .mini-atoms-history-date {
     color: var(--theia-descriptionForeground);
     font-size: 0.9em;
+}
+
+.mini-atoms-history-btn.selected {
+    border-color: var(--theia-focusBorder);
+    box-shadow: 0 0 0 1px var(--theia-focusBorder);
+}
+
+/* Code view for the currently selected app */
+.mini-atoms-code-section {
+    flex: 0 0 60%;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.mini-atoms-code-block {
+    flex: 1;
+    margin: 0;
+    padding: 6px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--theia-panelBorder);
+    background: var(--theia-editorBackground);
+    color: var(--theia-foreground);
+    font-family: var(--theia-editor-font-family, monospace);
+    font-size: var(--theia-editor-font-size, 12px);
+    overflow: auto;
+    white-space: pre;
 }

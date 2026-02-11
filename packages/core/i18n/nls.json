@@ -154,7 +154,7 @@
           }
         },
         "view": {
-          "label": "AI Chat"
+          "label": "Ask Mini Atoms"
         }
       },
       "chat-ui": {
@@ -163,7 +163,7 @@
         "aiDisabled": "AI features are disabled",
         "applyAll": "Apply All",
         "applyAllTitle": "Apply all pending changes",
-        "askQuestion": "Ask a question",
+        "askQuestion": "Ask Mini Atoms",
         "attachToContext": "Attach elements to context",
         "cancel": "Cancel (Esc)",
         "chat-view-tree-widget": {

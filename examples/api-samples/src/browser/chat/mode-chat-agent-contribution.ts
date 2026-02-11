@@ -27,7 +27,6 @@ import { injectable, interfaces } from '@theia/core/shared/inversify';
 export function bindModeChatAgentContribution(bind: interfaces.Bind): void {
     bind(ModeChatAgent).toSelf().inSingletonScope();
     bind(Agent).toService(ModeChatAgent);
-    bind(ChatAgent).toService(ModeChatAgent);
 }
 
 /**

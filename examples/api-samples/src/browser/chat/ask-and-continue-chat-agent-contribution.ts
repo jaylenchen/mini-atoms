@@ -30,7 +30,6 @@ import { injectable, interfaces, postConstruct } from '@theia/core/shared/invers
 export function bindAskAndContinueChatAgentContribution(bind: interfaces.Bind): void {
     bind(AskAndContinueChatAgent).toSelf().inSingletonScope();
     bind(Agent).toService(AskAndContinueChatAgent);
-    bind(ChatAgent).toService(AskAndContinueChatAgent);
 }
 
 const systemPrompt: BasePromptFragment = {

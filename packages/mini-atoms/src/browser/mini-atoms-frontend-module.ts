@@ -17,11 +17,14 @@ import {
     WidgetStatusBarContribution,
     FrontendApplicationContribution,
 } from '@theia/core/lib/browser';
+import { ChatAgent } from '@theia/ai-chat';
+import { Agent } from '@theia/ai-core';
 import { MiniAtomsContribution } from './mini-atoms-contribution';
 import { MiniAtomsWidget } from './mini-atoms-widget';
 import { MiniAtomsStorageService } from './mini-atoms-storage';
 import { MiniAtomsChatIntegration } from './mini-atoms-chat-integration';
 import { MiniAtomsApplicationShell } from './mini-atoms-application-shell';
+import { MiniAtomsChatAgent } from './mini-atoms-chat-agent';
 import '../../src/browser/style/index.css';
 
 export default new ContainerModule((bind: interfaces.Bind, _unbind: interfaces.Unbind, _isBound: interfaces.IsBound, rebind: interfaces.Rebind) => {
@@ -32,6 +35,10 @@ export default new ContainerModule((bind: interfaces.Bind, _unbind: interfaces.U
     bind(WidgetStatusBarContribution).toConstantValue(noopWidgetStatusBarContribution(MiniAtomsWidget));
     bind(MiniAtomsChatIntegration).toSelf().inSingletonScope();
     bind(FrontendApplicationContribution).toService(MiniAtomsChatIntegration);
+
+    bind(MiniAtomsChatAgent).toSelf().inSingletonScope();
+    bind(Agent).toService(MiniAtomsChatAgent);
+    bind(ChatAgent).toService(MiniAtomsChatAgent);
     bind(MiniAtomsStorageService).toSelf().inSingletonScope();
     bind(MiniAtomsWidget).toSelf();
     bind(WidgetFactory).toDynamicValue(context => ({

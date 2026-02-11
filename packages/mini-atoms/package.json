@@ -4,6 +4,7 @@
   "description": "Theia - Mini Atoms Extension (AI-generated app preview)",
   "dependencies": {
     "@theia/ai-chat": "1.68.2",
+    "@theia/ai-core": "1.68.2",
     "@theia/core": "1.68.2",
     "@theia/toolbar": "1.68.2",
     "tslib": "^2.6.2"

@@ -13,7 +13,13 @@
       "path": "../ai-chat"
     },
     {
+      "path": "../ai-core"
+    },
+    {
       "path": "../core"
+    },
+    {
+      "path": "../toolbar"
     }
   ]
 }

@@ -14,9 +14,7 @@ import { ChatService, isSessionCreatedEvent } from '@theia/ai-chat';
 import { ChatAddRequestEvent, ChatChangeEvent, ChatModel, ChatRequestModel } from '@theia/ai-chat/lib/common/chat-model';
 import { WidgetManager } from '@theia/core/lib/browser/widget-manager';
 import { FrontendApplicationContribution } from '@theia/core/lib/browser/frontend-application-contribution';
-import { extractHTML } from '../common/code-extractor';
-import { MiniAtomsWidget } from './mini-atoms-widget';
-import { MiniAtomsStorageService } from './mini-atoms-storage';
+import { MiniAtomsOrchestrator } from './mini-atoms-orchestrator';
 
 /**
  * When a Chat response completes and contains an HTML code block, show it in the left preview and save to history.
@@ -30,8 +28,8 @@ export class MiniAtomsChatIntegration implements FrontendApplicationContribution
     @inject(WidgetManager)
     protected readonly widgetManager: WidgetManager;
 
-    @inject(MiniAtomsStorageService)
-    protected readonly storageService: MiniAtomsStorageService;
+    @inject(MiniAtomsOrchestrator)
+    protected readonly orchestrator: MiniAtomsOrchestrator;
 
     protected readonly toDispose = new DisposableCollection();
 
@@ -61,30 +59,13 @@ export class MiniAtomsChatIntegration implements FrontendApplicationContribution
             if (!response.isComplete || response.isError) {
                 return;
             }
-            const text = response.response.asString();
-            const html = extractHTML(text);
-            if (html) {
-                this.showInPreview(html, request.request.text ?? 'From Chat');
-            }
+            void this.orchestrator.handleCompletedChatRequest(request);
             disposable.dispose();
         };
         const disposable = response.onDidChange(listener);
         if (response.isComplete && !response.isError) {
             listener();
         }
-    }
-
-    protected showInPreview(html: string, description: string): void {
-        const widget = this.widgetManager.tryGetWidget(MiniAtomsWidget.ID) as MiniAtomsWidget | undefined;
-        if (widget) {
-            widget.setPreviewHtml(html);
-        }
-        this.storageService.saveCurrent({ description: description.trim() || 'From Chat', html }).then(() => {
-            // After persisting, refresh preview/history so the bottom History list updates immediately.
-            if (widget) {
-                widget.refreshFromStorage();
-            }
-        });
     }
 
     onStop(): void {

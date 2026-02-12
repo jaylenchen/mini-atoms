@@ -23,6 +23,7 @@ import { MiniAtomsContribution } from './mini-atoms-contribution';
 import { MiniAtomsWidget } from './mini-atoms-widget';
 import { MiniAtomsStorageService } from './mini-atoms-storage';
 import { MiniAtomsChatIntegration } from './mini-atoms-chat-integration';
+import { MiniAtomsOrchestrator } from './mini-atoms-orchestrator';
 import { MiniAtomsApplicationShell } from './mini-atoms-application-shell';
 import { MiniAtomsChatAgent } from './mini-atoms-chat-agent';
 import '../../src/browser/style/index.css';
@@ -40,6 +41,7 @@ export default new ContainerModule((bind: interfaces.Bind, _unbind: interfaces.U
     bind(Agent).toService(MiniAtomsChatAgent);
     bind(ChatAgent).toService(MiniAtomsChatAgent);
     bind(MiniAtomsStorageService).toSelf().inSingletonScope();
+    bind(MiniAtomsOrchestrator).toSelf().inSingletonScope();
     bind(MiniAtomsWidget).toSelf();
     bind(WidgetFactory).toDynamicValue(context => ({
         id: MiniAtomsWidget.ID,

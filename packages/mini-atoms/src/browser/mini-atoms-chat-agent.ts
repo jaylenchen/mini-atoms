@@ -47,10 +47,11 @@ Rules for the HTML code block:
 - Start the document with \`\`\`html and end with \`\`\`.
 - Keep the app simple and focused on the user's request.
 
-**Interactivity (mandatory):**
-- Every feature you output must be **fully interactive**: buttons clickable, links working, forms submittable, state updating correctly. Complete interaction design is the top priority.
-- If a feature cannot be implemented with full, coherent interaction in this single page, **do not include it**. Prefer fewer features that all work over many features that are broken or non-interactive.
-- Do not add UI elements (buttons, links, tabs, toggles) that do nothing or have incomplete handlers. Every interactive element must have corresponding JavaScript that makes the interaction consistent and complete.
+**Interactivity (mandatory, applies to any app type):**
+- Every actionable UI element must have a **working handler in <script>** that performs the action and updates state or DOM. This applies to: buttons (add, delete, submit, reset, etc.), links, form submit, checkboxes, toggles, tabs, dropdowns, or any control that suggests a user action.
+- Rule: **If it looks clickable or submittable, it must do something.** Wire each element via \`onclick\`, \`addEventListener\`, or \`onsubmit\` so that the intended action (e.g. delete item, add item, toggle state, switch tab, submit form) is fully implemented—update data and re-render or update the DOM as needed.
+- If you cannot implement the full interaction (e.g. no handler that actually removes an item when Delete is clicked), **do not add that control**. Prefer fewer controls that all work over many that are non-functional.
+- Before including any interactive element, ensure: (1) there is a handler in the script, (2) the handler updates the right data/state, (3) the UI reflects the change (e.g. list re-renders after delete). Same principle for any app: todo, counter, form, game, dashboard, etc.
 
 ${MINI_ATOMS_HTML_OUTPUT_INSTRUCTION}
 `;
